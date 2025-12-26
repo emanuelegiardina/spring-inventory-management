@@ -1,0 +1,103 @@
+server:
+  port: 8084
+
+#eureka:
+  
+ # client:
+  #  service-url:
+   #   defaultZone: http://localhost:8761/eureka/
+  #instance:
+   # instance-id: order-service      # forza l'ID del servizio
+    #prefer-ip-address: true         # usa IP invece di hostname Docker random
+    #hostname: order-service         # hostname fisso per Eureka
+  
+
+
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          product-client:
+            client-id: order-service
+            client-secret: QWtcczMA5yNIM9EFWTxvvEhM2xJq6EzT
+            authorization-grant-type: client_credentials
+            provider: keycloak   # <-- qui associ il provider
+        provider:
+          keycloak:
+            token-uri: http://localhost:8181/realms/myrealm/protocol/openid-connect/token
+      resourceserver:         # <-- PER VALIDARE JWT IN INGRESSO
+        jwt:
+          issuer-uri: http://localhost:8181/realms/myrealm
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      productServiceCB:               # Nome del Circuit Breaker (lo userai nel codice)
+
+        registerHealthIndicator: true  # Espone lo stato del CB su Actuator (/health)
+
+        slidingWindowType: COUNT_BASED # Tipo di finestra:
+                                       # COUNT_BASED = ultime N chiamate
+                                       # TIME_BASED = ultimi X secondi
+
+        slidingWindowSize: 5          # Numero di chiamate osservate
+                                       # (es: ultime 10 chiamate)
+
+        minimumNumberOfCalls: 2        # Il CB NON scatta finché non ha almeno 5 chiamate
+                                       # evita aperture premature
+
+        failureRateThreshold: 50       # Percentuale di errori (%)
+                                       # se >=50% → OPEN
+
+        waitDurationInOpenState: 10s   # Quanto resta OPEN prima di HALF-OPEN
+
+        permittedNumberOfCallsInHalfOpenState: 3
+                                       # Quante chiamate di test in HALF-OPEN
+
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+                                       # Passa automaticamente a HALF-OPEN
+
+        recordExceptions:              # eccezioni come failure(utilizzare errori solo d infrastrutttura)
+          - java.io.IOException
+          - org.springframework.web.client.ResourceAccessException
+          - java.util.concurrent.TimeoutException
+          - java.net.ConnectException
+          - java.net.UnknownHostException
+          - org.springframework.web.reactive.function.client.WebClientRequestException
+
+  timelimiter:
+    instances:
+      productServiceCB:
+        timeoutDuration: 2s
+
+  retry:
+    instances:
+      productServiceCB:
+        maxAttempts: 3
+        waitDuration: 500ms
+        retryExceptions:
+          - java.io.IOException
+          - java.net.ConnectException
+          - java.util.concurrent.TimeoutException        
+
+management:
+  health:
+    circuitbreakers:
+      enabled: true
+
+  endpoint:
+    health:
+      show-details: always
+  endpoints:
+    web:
+      exposure:
+        include: health,info,circuitbreakers,circuitbreakerevents
+
+
+logging:
+  level:
+    org.springframework.web.reactive.function.client.ExchangeFunctions: DEBUG
+    io.github.resilience4j.circuitbreaker: DEBUG
+    io.github.resilience4j.retry: DEBUG
+    io.github.resilience4j.timelimiter: DEBUG

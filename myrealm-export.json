@@ -1,0 +1,91 @@
+{
+  "realm": "myrealm",
+  "enabled": true,
+
+  "roles": {
+    "realm": [
+      {
+        "name": "admin",
+        "description": "Admin role",
+        "clientRole": false,
+        "composite": false
+      },
+      {
+        "name": "user",
+        "description": "User role",
+        "clientRole": false,
+        "composite": false
+      }
+    ],
+    "client": {
+      "product-service": [
+        {
+          "name": "product_create",
+          "description": "Permission to create products"
+        },
+        {
+          "name": "product_check-stock",
+          "description": "Permission to check product stock"
+        }
+      ]
+    }
+  },
+
+  "clients": [
+    {
+      "clientId": "product-service",
+      "name": "Product Service (Public)",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["*"],
+      "webOrigins": ["*"]
+    },
+
+    {
+      "clientId": "order-service",
+      "name": "Order Microservice (Confidential)",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "serviceAccountsEnabled": true,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "QWtcczMA5yNIM9EFWTxvvEhM2xJq6EzT",
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "redirectUris": [],
+      "webOrigins": []
+    }
+  ],
+
+  "users": [
+    {
+      "username": "myadmin",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["admin"]
+    },
+    {
+      "username": "myuser",
+      "enabled": true,
+      "emailVerified": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "1234",
+          "temporary": false
+        }
+      ],
+      "realmRoles": ["user"]
+    }
+  ]
+}
