@@ -13,30 +13,45 @@ Entry point unico per il sistema
 Validazione JWT
 
 Routing verso i microservizi
+
 Circuit Breaker e fallback con Resilience4j verso order e product service
 
 ---Product Service
+
 Crea un prodotto
+
 Visualizza tutti prodotti
+
 Controllo stock e prodotti
+
 Conferma il pre-ordine decremnetando le stock
+
 Endpoint protetti con Spring Security e @PreAuthorize
 
 ---Order Service
+
 Verifica la disponibilità dei prodotti
+
 Crea un ordine 
+
 Conferma ordine
+
 Comunicazione reattiva tramite WebClient
+
 Circuit Breaker, Retry e TimeLimiter
 
 ---common.dto 
+
 libreria per gestire scambio dati tra FE e BE 
 
 🔐 Sicurezza
 
 La sicurezza è implementata con Spring Security e OAuth2 Resource Server.
+
 Keycloak come Identity Provider
+
 Autenticazione basata su JWT
+
 Autorizzazione tramite:
 Realm roles (es. admin, user)
 Client roles (es. product_confirm, product_check-stock)
