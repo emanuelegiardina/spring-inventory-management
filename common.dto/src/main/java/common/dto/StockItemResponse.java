@@ -1,4 +1,4 @@
-package com.shared;
+package common.dto;
 
 public class StockItemResponse {
 

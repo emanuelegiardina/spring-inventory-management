@@ -20,8 +20,8 @@
     "client": {
       "product-service": [
         {
-          "name": "product_create",
-          "description": "Permission to create products"
+          "name": "product_confirm",
+          "description": "Permission to pre-create order"
         },
         {
           "name": "product_check-stock",
@@ -32,6 +32,18 @@
   },
 
   "clients": [
+    {
+    "clientId": "myclientFE",
+    "name": "Frontend / Postman Client",
+    "enabled": true,
+    "publicClient": true,
+    "protocol": "openid-connect",
+    "standardFlowEnabled": false,
+    "directAccessGrantsEnabled": true,
+    "redirectUris": ["*"],
+    "webOrigins": ["*"]
+    },
+
     {
       "clientId": "product-service",
       "name": "Product Service (Public)",

@@ -10,7 +10,10 @@ server:
    # instance-id: order-service      # forza l'ID del servizio
     #prefer-ip-address: true         # usa IP invece di hostname Docker random
     #hostname: order-service         # hostname fisso per Eureka
-  
+services:
+  product:
+    base-url: http://localhost:8080
+
 
 
 spring:

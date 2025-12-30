@@ -26,9 +26,9 @@ public class SecurityConfig {
             
             .formLogin(form -> form.disable())  // disabilita login HTML
             .httpBasic(basic -> basic.disable()) //  disabilita  basic auth
-           // .oauth2ResourceServer(oauth2 -> oauth2.jwt());  // <-----validazione JWT con keycloack
-           .oauth2ResourceServer(oauth2 -> oauth2
-        .jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))); // <-- mappa jwt in grantedauthorites
+            .oauth2ResourceServer(oauth2 -> oauth2.jwt());  // <-----validazione JWT con keycloack
+         //  .oauth2ResourceServer(oauth2 -> oauth2
+        //.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter()))); // <-- mappa jwt in grantedauthorites
        
            return http.build();
     }

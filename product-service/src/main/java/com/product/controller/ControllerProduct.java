@@ -9,14 +9,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.product.model.Product;
 import com.product.service.ProductService;
-import com.shared.StockCheckRequest;
-import com.shared.StockCheckResponse;
 
+
+import common.dto.ConfirmOrderResponse;
+import common.dto.OrderItemDto;
+import common.dto.StockCheckRequest;
+import common.dto.StockCheckResponse;
 import reactor.core.publisher.Mono;
 
 
@@ -31,7 +33,8 @@ public class ControllerProduct {
     }
 
 
-    @PreAuthorize("hasRole('admin') and hasAuthority('product-service:product_create')")
+   // @PreAuthorize("hasRole('admin') and hasAuthority('product-service:product_create')") 
+    @PreAuthorize("hasRole('admin')")
     @PostMapping("/create")
     public ResponseEntity<Product> create(@RequestBody Product product) {
         Product saved = service.createProduct(product);
@@ -47,12 +50,22 @@ public class ControllerProduct {
 
     }
 
-    @PreAuthorize("hasRole('admin') and hasAuthority('product-service:product_check-stock')")
+   // @PreAuthorize("hasRole('admin') and hasAuthority('product-service:product_check-stock')")
+    @PreAuthorize("hasAuthority('product_check-stock')")
     @PostMapping("/check-stock")
     public Mono<StockCheckResponse> checkStock(
             @RequestBody StockCheckRequest request) {
 
         return service.checkStock(request);
     }
+    
+    @PreAuthorize("hasAuthority('product_confirm')")
+    @PostMapping("/confirm")
+    public ConfirmOrderResponse confirmStock(
+        @RequestBody List<OrderItemDto> items) {
+
+    return service.confirmStock(items);
+    }
+
 
  }

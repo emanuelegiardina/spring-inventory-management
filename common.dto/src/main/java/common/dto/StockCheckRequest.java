@@ -1,7 +1,9 @@
-package com.shared;
+package common.dto;
 
 import java.util.List;
 
+
+// classe che contiene elementi del carello
 public class StockCheckRequest {
 
     private List<OrderItemDto> items;

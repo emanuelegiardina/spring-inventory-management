@@ -2,15 +2,19 @@ package com.product.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
 import com.product.model.Product;
 import com.product.repository.ProductRepository;
-import com.shared.OrderItemDto;
-import com.shared.StockCheckRequest;
-import com.shared.StockCheckResponse;
-import com.shared.StockItemResponse;
+
+import common.dto.ConfirmOrderResponse;
+import common.dto.OrderItemDto;
+import common.dto.StockCheckRequest;
+import common.dto.StockCheckResponse;
+import common.dto.StockItemResponse;
+import jakarta.transaction.Transactional;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -30,7 +34,7 @@ public class ProductService {
          return repository.findAll();
 
     }
-
+    // controlla stock e prodotti
     public Mono<StockCheckResponse> checkStock(StockCheckRequest request) {
 
         List<StockItemResponse> result = new ArrayList<>();
@@ -58,25 +62,42 @@ public class ProductService {
 
         return Mono.just(response); 
     }
+    
+@Transactional
+public ConfirmOrderResponse confirmStock(List<OrderItemDto> items) {
 
+    List<OrderItemDto> unavailable = new ArrayList<>();
 
-/*
-    public Product getProduct(Long id) {
-        return repository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Product not found"));
-    }
+    for (OrderItemDto item : items) {
+        Optional<Product> product = repository.findById(item.getProductId());
 
-    public boolean isProductAvailable(Long productId, int requestedQty) {
-        Product product = getProduct(productId);
-        return product.getQuantita() >= requestedQty;
-    }
-
-    public void decreaseStock(Long productId, int qty) {
-        Product product = getProduct(productId);
-        if (product.getQuantita() < qty) {
-            throw new IllegalStateException("Not enough stock");
+        if (product.isEmpty() || product.get().getQuantita() < item.getQuantity()) {
+            unavailable.add(item);
         }
-        product.setQuantita(product.getQuantita() - qty);
-        repository.save(product);
-    }*/
+    }
+
+    if (!unavailable.isEmpty()) {
+        ConfirmOrderResponse res = new ConfirmOrderResponse();
+        res.setSuccess(false);
+        res.setMessage("Prodotti non disponibili o stock insufficiente");
+        res.setUnavailableItems(unavailable);
+        return res;
+    }
+
+    // decremento stock
+    for (OrderItemDto item : items) {
+        Product product = repository.findById(item.getProductId()).get();
+        product.setQuantita(product.getQuantita() - item.getQuantity());
+    }
+
+    ConfirmOrderResponse res = new ConfirmOrderResponse();
+    res.setSuccess(true);
+    res.setMessage("Stock aggiornato");
+    res.setUnavailableItems(List.of());
+    return res;
+}
+
+
+
+
 }
