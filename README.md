@@ -6,9 +6,12 @@ L’obiettivo principale è dimostrare l’uso di Spring ecosystem, security ent
 
 Componenti principali
 
----API Gateway
+---API Gateway 
+
 Entry point unico per il sistema
+
 Validazione JWT
+
 Routing verso i microservizi
 Circuit Breaker e fallback con Resilience4j verso order e product service
 
